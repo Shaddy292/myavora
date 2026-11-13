@@ -1,0 +1,18 @@
+# AVORA — static SPA + PHP API on cPanel.
+# /api/* goes to the PHP front controller; /uploads is never served directly;
+# every other path falls back to index.html so client-side routing works.
+# HTTPS + HSTS are best set at the virtual-host level in cPanel (Domains →
+# Force HTTPS Redirect).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Never serve the upload store directly — files go through /api/files/,
+  # which sets content types and validates names.
+  RewriteRule ^uploads(/|$) - [F,L]
+
+  RewriteRule ^api(/|$) index.php [L,QSA]
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . index.html [L]
+</IfModule>
